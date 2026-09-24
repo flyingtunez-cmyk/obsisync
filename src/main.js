@@ -10,7 +10,11 @@ const state = {
   overlay: null,
   verify: null,
   editing: false,
-  profile: JSON.parse(localStorage.getItem('obsisync:profile') || '{"avatar":null,"banner":null,"theme":0}'),
+  profile: (() => {
+    const p = JSON.parse(localStorage.getItem('obsisync:profile') || '{"avatar":null,"banner":null,"theme":0}')
+    p.theme = Number.isInteger(+p.theme) && p.theme !== null ? (+p.theme % 4 + 4) % 4 : 0
+    return p
+  })(),
   flash: null
 }
 
@@ -406,7 +410,8 @@ function avatarImg (extra = '') {
   return `<img class="avatar-img ${extra}" src="${src}" alt="аватар" />`
 }
 
-const editorHtml = `
+function editorHtml () {
+return `
   <section class="editor bevel" id="pf-editor">
     <div class="editor-head">
       <h2>Настройки профиля</h2>
@@ -441,6 +446,7 @@ const editorHtml = `
     </div>
   </section>
 `
+}
 
 const breakdownHtml = stats.breakdown.map(b => `
   <div class="br-row">
@@ -508,7 +514,7 @@ function profileHtml () {
     </div>
 
     <div class="container">
-      ${state.editing ? editorHtml : ''}
+      ${state.editing ? editorHtml() : ''}
 
       <div class="pf-stats reveal" data-reveal>
         <div class="stat-card bevel"><strong data-count="${stats.total}">0</strong><span>изменений за год</span></div>

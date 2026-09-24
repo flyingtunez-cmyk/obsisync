@@ -309,6 +309,7 @@ body {
 
 .banner {
   position: relative; height: 250px; overflow: hidden; z-index: 0;
+  isolation: isolate;
 }
 .banner::after {
   content: ''; position: absolute; inset: 0;
@@ -325,12 +326,12 @@ body {
 .banner-theme3 { background: linear-gradient(180deg, rgba(255, 126, 52, 0.11), rgba(255, 126, 52, 0.04) 46%, rgba(0, 0, 0, 0)); }
 .banner-img {
   position: absolute; inset: 0; width: 100%; height: 100%;
-  object-fit: cover; z-index: 0; opacity: 0.34;
-  filter: saturate(0.7) brightness(0.6);
+  object-fit: cover; z-index: -1; opacity: 0.45;
+  filter: saturate(0.6) brightness(0.55);
 }
 .banner-shade {
   position: absolute; inset: 0; z-index: 1; pointer-events: none;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.6) 55%, #000);
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.5) 55%, #000);
 }
 
 .avatar {
@@ -461,6 +462,7 @@ body {
 .banner-editor {
   position: relative; width: 240px; height: 90px; overflow: hidden;
   border: 1px solid var(--border); border-radius: 8px; flex-shrink: 0;
+  isolation: isolate;
 }
 .banner-editor .banner-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .editor-themes { display: flex; gap: 10px; }
