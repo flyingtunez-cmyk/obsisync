@@ -1,0 +1,61 @@
+{
+  "name": "obsisync-app",
+  "productName": "ObsiSync",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Клиент ObsiSync: аккаунт, профиль и файлы vault из десктопного приложения",
+  "homepage": "https://github.com/obsisync/obsisync",
+  "desktopName": "obsisync.desktop",
+  "main": "src/main.js",
+  "author": "ObsiSync",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "dist:linux": "electron-builder --linux AppImage deb --publish never",
+    "dist:win": "electron-builder --win nsis --publish never",
+    "dist": "electron-builder --linux AppImage deb --win nsis --publish never"
+  },
+  "devDependencies": {
+    "electron": "^44.4.5",
+    "electron-builder": "^26.15.3"
+  },
+  "build": {
+    "appId": "io.obsisync.desktop",
+    "productName": "ObsiSync",
+    "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "src/**/*",
+      "package.json"
+    ],
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "category": "Office",
+      "synopsis": "Синхронизация заметок Obsidian",
+      "maintainer": "ObsiSync <obsisync@localhost>",
+      "icon": "build/icon.png",
+      "syncDesktopName": true
+    },
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": "build/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "ObsiSync",
+      "artifactName": "ObsiSync-Setup-${version}.exe"
+    }
+  }
+}

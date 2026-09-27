@@ -1,0 +1,26 @@
+# Один сервис — API. Фронтенд в проде отдаётся статикой, а локально
+# гоняется обычным `npm run dev` (проксирует /api на этот контейнер).
+#
+#   docker compose up --build          # http://127.0.0.1:3000
+#   API_PROXY=http://api:3000 npm run dev   # если фронт тоже в контейнере
+
+services:
+  api:
+    build: ./server
+    container_name: obsisync-api
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3000:3000"
+    environment:
+      HOST: 0.0.0.0
+      PORT: 3000
+    volumes:
+      # SQLite-база + блобы версий + vault'ы пользователей + аватары
+      - obsisync-data:/app/data
+      - obsisync-vaults:/app/vaults
+      - obsisync-uploads:/app/uploads
+
+volumes:
+  obsisync-data:
+  obsisync-vaults:
+  obsisync-uploads:
