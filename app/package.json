@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "private": true,
   "description": "Клиент ObsiSync: аккаунт, профиль и файлы vault из десктопного приложения",
-  "homepage": "https://github.com/obsisync/obsisync",
+  "homepage": "https://github.com/flyingtunez-cmyk/obsisync",
   "desktopName": "obsisync.desktop",
   "main": "src/main.js",
   "author": "ObsiSync",
