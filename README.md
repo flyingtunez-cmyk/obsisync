@@ -43,52 +43,33 @@ git clone https://github.com/flyingtunez-cmyk/obsisync.git
 cd obsisync
 ```
 
-Если Git не установлен или не настроен: клонирование доступно и через веб-интерфейс
-(repo → кнопка **Code** → **HTTPS** → ссылка), а архивом — **Code → Download ZIP**.
+Без Git: **Code → Download ZIP**. Учти, что распакуется папка **`obsisync-main`**, а не `obsisync` — поэтому `cd obsisync` не сработает, нужно `cd obsisync-main`.
 
 ---
 
-## Полная пошаговая инструкция
-
-### Шаг 1. Установка зависимостей (один раз)
+## Установка — одна команда
 
 ```bash
-npm install                        # сайт (Vite) + ws для тестов
-cd server && npm install && cd ..  # сервер (Express + SQLite)
-cd app && npm install && cd ..     # десктоп-приложение (опционально)
+npm run setup
 ```
 
-### Шаг 2. Запуск трёх терминалов
+Эта команда сама найдёт корень проекта, проверит версию Node и поставит зависимости сайта и сервера. Она не зависит от того, из какой папки её вызвали, и работает в bash, zsh, fish, PowerShell и cmd — поэтому её невозможно запустить не из того каталога.
 
-**Терминал 1 — API-сервер:**
-```bash
-npm run api
-```
-Сервер стартует на `http://127.0.0.1:3000` с WebSocket-каналом `ws://127.0.0.1:3000/api/ws`.
-> Команда `npm run api` использует `node --watch server/src/index.js` (Node 18.15+).
-> Если `--watch` недоступен, запустите вручную: `node server/src/index.js`.
-> Для доступа с других устройств в сети: `HOST=0.0.0.0 npm run api`.
-
-**Терминал 2 — Сайт (Vite dev):**
-```bash
-npm run dev
-```
-Сайт доступен на `http://localhost:5173`.
-> Для доступа с других устройств сети: `http://<IP_устройства>:5173`.
-> Vite автоматически проксирует `/api`, `/health`, `/uploads` на API-сервер.
-
-**Терминал 3 — Десктоп-приложение (опционально):**
-```bash
-cd app && npm start
-```
-
-### Шаг 3. Проверка
+С десктопным приложением (Electron, тяжёлый):
 
 ```bash
-curl http://127.0.0.1:3000/health
-# → {"status":"ok","service":"obsisync-api"}
+npm run setup -- --with-app
 ```
-Откройте `http://localhost:5173` в браузере — лендинг, кнопка «Войти» → регистрация работает.
+
+### Если хочется по-старому, вручную
+
+```bash
+npm install                        # сайт и тесты
+cd server && npm install && cd ..  # сервер
+cd app && npm install && cd ..     # десктоп (по желанию)
+```
+
+> Три строки с `cd` ломаются в PowerShell 5.1 (там нет `&&`) и в cmd. Если видишь `directory not found` — скорее всего, команда выполнена не из корня проекта. Проверь: `ls package.json` должен найти файл, и `pwd` должен указывать на корень ObsiSync. Проще просто выполнить `npm run setup`.
 
 ### Тесты API
 
