@@ -84,6 +84,27 @@ for (const rel of ['cli/obsisync.js', 'vite.config.js', 'server/src/index.js', '
 }
 line('')
 
+/* ── версия репозитория ── */
+line(c.bold('Версия проекта'))
+const git = (...a) => { try { return execFileSync('git', a, { cwd: ROOT, encoding: 'utf8' }).trim() } catch { return null } }
+if (!fs.existsSync(path.join(ROOT, '.git'))) {
+  warn('это не git-клон (нет .git) — нельзя проверить обновления и не сработает git pull')
+} else {
+  const head = git('rev-parse', '--short', 'HEAD')
+  const subject = git('log', '-1', '--pretty=%s')
+  line(`  коммит        ${head} ${subject ? c.dim(subject) : ''}`)
+  git('fetch', '--quiet', 'origin') // тихо, чтобы не лезть в сеть при первом запуске без спроса
+  const behind = git('rev-list', '--count', 'HEAD..origin/main')
+  const branch = git('rev-parse', '--abbrev-ref', 'HEAD')
+  if (behind === null) warn('не удалось сравнить с origin — проверь интернет или права')
+  else if (behind === '0') ok('код свежий, всё с origin')
+  else {
+    warn(`код устарел: ${behind} коммит(ов) позади origin/main`)
+    warn(`  ${c.dim('обновить:')} git pull`)
+  }
+  if (branch && branch !== 'main') warn(`ты на ветке ${branch}, а не main`)
+}
+
 /* ── порты и сервер ── */
 line(c.bold('Порты и запущенный сервер'))
 for (const port of [3000, 5173]) {
