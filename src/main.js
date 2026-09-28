@@ -164,7 +164,10 @@ function downloadHtml () {
                  <div class="dl-meta mono">${mb(f.size)} · ${f.name}</div>
                  ${d.cmd ? `<div class="dl-cmd mono">${d.cmd}</div>` : ''}
                  ${d.hint ? `<div class="dl-hint">${d.hint}</div>` : ''}`
-              : `<div class="dl-empty mono">сборка не найдена — npm run downloads</div>`}
+              : `<div class="dl-empty mono">сборки пока нет</div>
+                 <div class="dl-cmd mono">npm run dist:app</div>
+                 <div class="dl-hint">Готовые файлы не лежат в репозитории — они весят ~300 МБ.
+                 Собери у себя одной командой, потом обнови страницу.</div>`}
           </div>`
         }).join('')}
       </div>

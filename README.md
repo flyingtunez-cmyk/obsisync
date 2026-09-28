@@ -103,7 +103,42 @@ node scripts/test-api.mjs   # 7 проверок: версии, старые р�
 ```bash
 docker compose up --build   # API на 127.0.0.1:3000, данные в именных томах
 ```
+
 > Локально сборка требует прав на docker-сокет; на VPS отрабатывает штатно.
+
+## Десктоп-приложение (без терминала)
+
+Сайт и API живут в двух терминалах, а само приложение — обычное окно.
+
+### Запуск из исходников
+
+```bash
+npm run setup -- --with-app    # один раз поставить зависимости Electron
+npm run api                    # терминал 1 — нужен работающий сервер
+cd app && npm start            # откроется окно приложения
+```
+
+### Сборка файлов, которые можно раздать
+
+Готовые файлы **не лежат в репозитории** — они весят ~300 МБ, поэтому в git их нет и на свежем клоне страница «Скачать» покажет «сборки пока нет». Собери у себя:
+
+```bash
+npm run dist:app            # Linux: .deb + AppImage
+npm run dist:app -- --win   # Windows
+npm run dist:app -- --all   # всё сразу
+```
+
+Команда собирает приложение и сразу выкладывает файлы в `public/downloads`, после чего страница «Скачать» начинает их отдавать. **wine не нужен** — electron-builder собирает `.exe` прямо на Linux.
+
+Что получится на Arch:
+
+| Файл | Как открыть без терминала |
+|---|---|
+| `ObsiSync-0.1.0-linux-amd64.deb` | `sudo pacman -U public/downloads/ObsiSync-0.1.0-linux-amd64.deb` → ярлык в меню приложений |
+| `ObsiSync-0.1.0-linux-x86_64.AppImage` | `chmod +x` + двойной клик в файловом менеджере |
+| `ObsiSync-0.1.0-win-x64.exe` | двойной клик в Windows |
+
+> Инсталлятор `.exe` в формате NSIS требует **wine** (`sudo pacman -S --needed wine`) — на Linux он зовёт `signtool.exe`. Переносимая версия `.exe` собирается без него.
 
 ---
 
@@ -205,6 +240,9 @@ obsisync/
 ├── cli/obsisync.js           терминальный клиент
 ├── app/                      Electron-приложение (main/preload/renderer)
 ├── scripts/test-api.mjs      автотесты API
+├── scripts/setup.mjs         установка всех частей (npm run setup)
+├── scripts/doctor.mjs        диагностика окружения (npm run doctor)
+├── scripts/build-app.mjs     сборка приложения + выкладка на сайт
 ├── docker-compose.yml
 └── README.md
 ```

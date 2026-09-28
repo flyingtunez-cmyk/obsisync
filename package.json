@@ -12,6 +12,7 @@
   "scripts": {
     "setup": "node scripts/setup.mjs",
     "doctor": "node scripts/doctor.mjs",
+    "dist:app": "node scripts/build-app.mjs",
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
