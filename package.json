@@ -6,7 +6,7 @@
     "obsisync": "./cli/obsisync.js"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=22.12.0"
   },
   "type": "module",
   "scripts": {
