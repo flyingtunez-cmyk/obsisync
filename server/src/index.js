@@ -317,13 +317,14 @@ app.post('/api/profile/password', auth, (req, res) => {
 
 app.get('/api/sessions', auth, (req, res) => {
   const rows = db
-    .prepare('SELECT id, label, ip, created_at, last_seen FROM sessions WHERE user_id = ? ORDER BY last_seen DESC')
+    .prepare('SELECT id, label, ip, user_agent, created_at, last_seen FROM sessions WHERE user_id = ? ORDER BY last_seen DESC')
     .all(req.userId)
   res.json({
     sessions: rows.map(r => ({
       id: r.id,
       label: r.label,
       ip: r.ip,
+      ua: r.user_agent,
       createdAt: r.created_at,
       lastSeen: r.last_seen,
       current: r.id === req.sessionId
@@ -424,6 +425,17 @@ app.get('/api/activity', auth, (req, res) => {
       .sort((a, b) => b[1] - a[1])
       .slice(0, 5)
       .map(([path, count]) => ({ path, count }))
+  })
+})
+
+// Лента последних операций: что, когда и с какого устройства.
+app.get('/api/activity/feed', auth, (req, res) => {
+  const limit = Math.min(Math.max(Number(req.query.limit) || 30, 1), 200)
+  const rows = db
+    .prepare('SELECT path, op, device, at FROM revisions WHERE user_id = ? ORDER BY at DESC, id DESC LIMIT ?')
+    .all(req.userId, limit)
+  res.json({
+    feed: rows.map(r => ({ path: r.path, op: r.op, device: r.device, at: r.at }))
   })
 })
 

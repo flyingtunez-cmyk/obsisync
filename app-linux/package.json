@@ -1,0 +1,43 @@
+{
+  "name": "obsisync-linux-app",
+  "productName": "ObsiSync Linux",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Linux-клиент ObsiSync: устройства, активность и реальная системная информация этой машины",
+  "homepage": "https://github.com/flyingtunez-cmyk/obsisync",
+  "main": "src/main.js",
+  "author": "ObsiSync",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --linux AppImage deb pacman --publish never"
+  },
+  "devDependencies": {
+    "electron": "^44.4.5",
+    "electron-builder": "^26.15.3"
+  },
+  "build": {
+    "appId": "io.obsisync.linux",
+    "productName": "ObsiSync Linux",
+    "artifactName": "${productName}-${version}-${arch}.${ext}",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "src/**/*",
+      "package.json"
+    ],
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb",
+        "pacman"
+      ],
+      "category": "Utility",
+      "synopsis": "Устройства, активность и системная информация ObsiSync",
+      "maintainer": "ObsiSync <obsisync@localhost>",
+      "icon": "build/icon.png"
+    }
+  }
+}

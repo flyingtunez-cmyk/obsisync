@@ -13,6 +13,7 @@ const state = {
   activity: null,
   activityError: false,
   sessions: [],
+  feed: [],
   overlay: null,
   verify: null,
   twofaSetup: null,
@@ -88,13 +89,15 @@ async function refreshAccount () {
 
   // сервер может быть недоступен — тогда профиль остаётся, а данные помечаем ошибкой
   try {
-    const [act, ses] = await Promise.all([
+    const [act, ses, feed] = await Promise.all([
       api('/api/activity', { token: state.token }),
-      api('/api/sessions', { token: state.token })
+      api('/api/sessions', { token: state.token }),
+      api('/api/activity/feed?limit=20', { token: state.token }).catch(() => ({ status: 200, data: { feed: [] } }))
     ])
     if (act.status === 200) { state.activity = act.data; state.activityError = false }
     else state.activityError = true
     if (ses.status === 200) state.sessions = ses.data.sessions
+    if (feed.status === 200) state.feed = feed.data?.feed || []
   } catch {
     state.activityError = true
   }
@@ -337,6 +340,7 @@ function heroWindowHtml () {
         <li><b>PUT</b> /api/profile <span>био и тема</span></li>
         <li><b>GET</b> /api/sessions <span>устройства</span></li>
         <li><b>GET</b> /api/activity <span>календарь операций</span></li>
+        <li><b>GET</b> /api/activity/feed <span>лента последних операций</span></li>
       </ul>`
 
   return `
@@ -564,8 +568,20 @@ function devicesHtml () {
       <div>
         <div class="device-name">${escapeHtml(s.label)}${s.current ? ' <span class="badge-sm">это устройство</span>' : ''}</div>
         <div class="device-last">${escapeHtml(s.ip || '—')} · вход ${fmtWhen(s.createdAt)} · был ${fmtWhen(s.lastSeen)}</div>
+        ${s.ua ? `<div class="device-ua mono" title="${escapeHtml(s.ua)}">${escapeHtml(s.ua)}</div>` : ''}
       </div>
       ${s.current ? '<span class="dot dot-ok"></span>' : `<button class="btn btn-ghost btn-sm" data-revoke="${s.id}">Отозвать</button>`}
+    </li>`).join('')}</ul>`
+}
+
+function feedHtml () {
+  const feed = state.feed || []
+  if (!feed.length) return `<div class="empty-note">Операций пока нет — лента заполнится после первых синков.</div>`
+  return `<ul class="feed">${feed.map(f => `
+    <li class="feed-item">
+      <span class="feed-kind feed-${escapeHtml(f.op)}">${KIND_LABELS[f.op] || escapeHtml(f.op)}</span>
+      <span class="feed-path mono">${escapeHtml(f.path)}</span>
+      <span class="feed-meta">${escapeHtml(f.device || '—')} · ${fmtWhen(f.at)}</span>
     </li>`).join('')}</ul>`
 }
 
@@ -698,6 +714,11 @@ function profileHtml () {
           <p class="panel-note">Аватар и баннер лежат на сервере в /uploads и доступны с любого устройства.</p>
         </section>
       </div>
+
+      <section class="panel bevel reveal" data-reveal>
+        <div class="panel-head"><h2>Лента операций</h2><span class="badge-sm">из API</span></div>
+        ${feedHtml()}
+      </section>
 
       ${securityHtml()}
     </div>
